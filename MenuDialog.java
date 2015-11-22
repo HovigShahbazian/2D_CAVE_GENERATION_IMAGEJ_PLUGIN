@@ -14,18 +14,20 @@ public class MenuDialog extends GenericDialog implements ActionListener {
 	int textFieldWidth = 5;
 	
     Random rand = new Random();
-	ImagePlus imp;
+	
+	static ImagePlus imp;
 
-	static String title="Example";
-	static int width=200,height=200;
-	static int v1 = 4;
-	static int v2 = 5;
-	static int v3 = 5;
-    static int iterations = 6;
-	static int percent = 57;
-	static int maxPercent = 99;
-	static int floorColor = 0xFFFFFF;;
-	static int wallColor = 0x000000;
+	String title="Example";
+	int width = 200;
+	int height = 200;
+	int v1 = 0;
+	int v2 = 4;
+	int v3 = 4;
+    int iterations = 2;
+	int percent = 40;
+
+	int wallColor = 0x993300;
+	int floorColor = 0xcc6600;
 	
 	CellAutomata cellAuto;
 	
@@ -72,7 +74,7 @@ public class MenuDialog extends GenericDialog implements ActionListener {
 		
 		ibutton = new Button("Iterate");
 		cbutton = new Button("Generate");
-		cellAuto = new CellAutomata(v1,v2,v3,percent);
+		cellAuto = new CellAutomata(v1,v2,v3,percent,wallColor,floorColor);
 		
 		setModal(false);
 		
@@ -106,12 +108,7 @@ public class MenuDialog extends GenericDialog implements ActionListener {
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-     		//GenericDialog gd = new GenericDialog("Test");
-			//gd.showDialog();
-				
-			if( e.getActionCommand().equals("Create")){
 
-				imp = IJ.createImage("2d Cave ", "RGB white", width,height,1);
 				title = titleText.getText();
 				width = Integer.parseInt(widthText.getText());
 				height = Integer.parseInt(heightText.getText());
@@ -120,20 +117,33 @@ public class MenuDialog extends GenericDialog implements ActionListener {
 				v2 = Integer.parseInt(v2Text.getText());
 				v3 = Integer.parseInt(v3Text.getText());
 				percent = Integer.parseInt(percentText.getText());
-                cellAuto = new CellAutomata(v1,v2,v3,percent);
+				
+	        
+			
+			if( e.getActionCommand().equals("Create")){
+				
+				if( imp == null)
+					imp = IJ.createImage("2d Cave", "RGB white", width,height,1);
+				else
+					imp.setImage(IJ.createImage("2d Cave", "RGB white", width,height,1));
+				
+				
+				
+                cellAuto = new CellAutomata(v1,v2,v3,percent,wallColor,floorColor);
 				cellAuto.createMap(imp,iterations);
 				imp.show();
 			}
 			else if(e.getActionCommand().equals("Iterate")){
-				
-				if(imp != null){
-					cellAuto.ApplyAutoToImage(imp);
-					imp.updateAndDraw();
-					imp.show();
-				}
+			
+                cellAuto = new CellAutomata(v1,v2,v3,percent,wallColor,floorColor);
+				cellAuto.ApplyAutoToImage(imp);
+				imp.updateAndDraw();
+				imp.updateImage();
+				imp.updateChannelAndDraw();
+				imp.show();
+			
 			}
 			else if(e.getActionCommand().equals("Enter")){
-				
 				
 			    IJ.log("Entered");
 			}

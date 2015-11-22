@@ -10,25 +10,22 @@ import ij.WindowManager;
 
 public class CellAutomata {
 	Random rand = new Random();
-	ImagePlus imp;
-	
-	//static String title="Example";
-	//static int width=200,height=200;
-	static int v1 = 4;
-	static int v2 = 5;
-	static int v3 = 5;
-	//static int iterations = 6;
-	static int percent = 57;
-	static int maxPercent = 99;
-	static int floorColor = 0xbd6f2c;
-	static int wallColor = 0x5c2e06;
-    
 
-   public CellAutomata(int value1,int value2,int value3,int p){
+	int v1;
+	int v2;
+	int v3;
+	int percent;
+	int maxPercent = 99;
+	int floorColor;
+	int wallColor;
+    
+   public CellAutomata(int value1,int value2,int value3,int p, int wColor, int fColor){
        v1 = value1;
 	   v2 = value2;
 	   v3 = value3;
 	   percent = p;
+	   floorColor = fColor;
+	   wallColor = wColor;
    }
 
 	public void createMap(ImagePlus imp,int iter) {
@@ -62,8 +59,10 @@ public class CellAutomata {
 	    ImageProcessor ip = imp.getProcessor();
 		int w = ip.getWidth();
 		int h = ip.getHeight();
-		Grid newGrid = GetGridFromImage(imp);
-		//newGrid = RunAutomation(newGrid);
+		Grid newGrid = GetGridFromImage(imp); 
+		
+		//IJ.log("Ran automation");
+		newGrid = RunAutomationThree(newGrid);
 
 		//after automation is applied draw the new map
 		for (int u = 0; u < w; u++) {
@@ -77,7 +76,6 @@ public class CellAutomata {
 				}
 			}
 		}
-		
 	}
 
 	public Grid GetGridFromImage(ImagePlus imp){
@@ -93,6 +91,9 @@ public class CellAutomata {
 				if(p == wallColor){
 					newGrid.getNode(u, v).setWall(true);
 				}
+				else{
+					newGrid.getNode(u, v).setWall(false);
+				}
 			}
 		}
 		return newGrid;
@@ -105,8 +106,8 @@ public class CellAutomata {
 		for(int u = 0; u < width; u++){
 			for(int v = 0; v < height; v++){
 
-				randomGrid.getNode(u, v).setX(u);
-				randomGrid.getNode(u, v).setY(v);
+				//randomGrid.getNode(u, v).setX(u);
+				//randomGrid.getNode(u, v).setY(v);
 
 				if(rand.nextInt(maxPercent) < percent){
 					randomGrid.getNode(u, v).setWall(true);
@@ -160,5 +161,82 @@ public class CellAutomata {
 		}
 		return grid;
 	}
+	
+	//run algorithim two
+	public Grid RunAutomationTwo(Grid grid){
+
+		int height = grid.getHeight();
+		int width = grid.getWidth() ;
+
+		Grid newGrid = new Grid(width,height);
+
+		for (int v = 0; v < height; v++) {
+			for (int u = 0; u < width; u++) {
+				int numofWalls = 0;
+				ArrayList<Node> neighbors = grid.getNeighbors(grid.getNode(u, v));
+
+				for (int i = 0; i < neighbors.size(); i++) {
+					if (neighbors.get(i).getWall()) {
+						numofWalls++;
+					}
+				}
+				if (grid.getNode(u, v).getWall()) {
+
+					if ((numofWalls < v2)) {
+						newGrid.getNode(u, v).setWall(false);
+					}
+					else{
+						newGrid.getNode(u, v).setWall(true);
+					}
+					
+				} else {
+					
+					if ((numofWalls > v3)) {
+						newGrid.getNode(u, v).setWall(true);
+					}
+					else{
+						newGrid.getNode(u, v).setWall(false);
+					}
+				}
+
+			}
+		}
+		return newGrid;
+	}
+	
+	//run algorithim three
+	public Grid RunAutomationThree(Grid grid){
+
+		int height = grid.getHeight();
+		int width = grid.getWidth() ;
+
+		Grid newGrid = new Grid(width,height);
+
+		for (int v = 0; v < height; v++) {
+			for (int u = 0; u < width; u++) {
+				int numofWalls = 0;
+				ArrayList<Node> neighbors = grid.getNeighbors(grid.getNode(u, v));
+
+				for (int i = 0; i < neighbors.size(); i++) {
+					if (neighbors.get(i).getWall()) {
+						numofWalls++;
+					}
+				}				
+				if (grid.getNode(u, v).getWall()) {
+                     
+					if ((numofWalls < v2)) {
+						newGrid.getNode(u, v).setWall(false);
+					}
+					else{
+						newGrid.getNode(u, v).setWall(true);
+					}
+				}		
+			}
+		}
+		return newGrid;
+	}
+	
+	
+	
 }
 

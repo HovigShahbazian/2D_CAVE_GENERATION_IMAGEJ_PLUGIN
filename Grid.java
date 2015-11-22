@@ -21,10 +21,10 @@ public class Grid {
                 nodeArray[i] = new Node[height];
                 for(int j =0; j<height;j++) {
                     nodeArray[i][j] = new Node(false);
+					nodeArray[i][j].setX(i);
+					nodeArray[i][j].setY(j);
                 }
         }
-
-
     }
 
     public Node[][] getGrid() {
